@@ -49,14 +49,30 @@
 </p>
 
 ---
-
 ## 🏗️ System Architecture
 
 ```mermaid
-graph LR
-  A[Frontend: React + NextJS] --> B[Backend: FastAPI]
-  A --> C[Backend: NextJS Server Functions]
-  B --> D[Database: MongoDB]
+graph TD
+  subgraph Frontend
+    A[🌐 React + NextJS]
+  end
+
+  subgraph Backend
+    B[⚙️ FastAPI Server]
+    C[🔧 NextJS Server Functions]
+  end
+
+  subgraph Database
+    D[(🗄️ MongoDB)]
+  end
+
+  subgraph AI Services
+    E[🧠 AI Engine]
+  end
+
+  A --> B
+  A --> C
+  B --> D
   C --> D
-  B --> E[AI Services]
+  B --> E
 ```
