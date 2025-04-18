@@ -56,12 +56,6 @@
 graph LR
     A[Frontend (React + Next.js)] --> B[Backend (FastAPI)]
     A --> C[Backend (Next.js)]
-    B --> D[(MongoDB)]
+    B --> D[Database (MongoDB)]
     C --> D
     B --> E[AI Services]
-
-    style A fill:#61DAFB,stroke:#333,stroke-width:2px
-    style B fill:#009688,stroke:#333,stroke-width:2px
-    style C fill:#000000,stroke:#333,stroke-width:2px
-    style D fill:#4DB33D,stroke:#333,stroke-width:2px
-    style E fill:#FF6B6B,stroke:#333,stroke-width:2px
