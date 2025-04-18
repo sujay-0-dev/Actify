@@ -54,8 +54,9 @@
 
 ```mermaid
 graph LR
-    A[Frontend (React + Next.js)] --> B[Backend (FastAPI)]
-    A --> C[Backend (Next.js)]
-    B --> D[Database (MongoDB)]
-    C --> D
-    B --> E[AI Services]
+  A[Frontend (React + Next.js)] --> B[Backend (FastAPI)]
+  A --> C[Backend (Next.js)]
+  B --> D[(MongoDB)]
+  C --> D
+  B --> E[AI Services]
+```
