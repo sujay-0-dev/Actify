@@ -1,4 +1,4 @@
-# Actify - Act Today, Impact Tomorrow 🌟
+# 🌟 Actify – Act Today, Impact Tomorrow
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org)
@@ -9,76 +9,59 @@
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/Dhritikrishna123/Actify/main/frontend/public/actify-logo.png" alt="Actify - Act Today, Impact Tomorrow" width="400"/>
-  <br/>
+  <br/><br/>
   <strong>🌿 Empowering Communities Through Technology 🤝</strong>
 </div>
 
+---
+
 ## 🎯 Vision
 
-Actify is a revolutionary platform that transforms community engagement through:
+**Actify** is a revolutionary platform that transforms community engagement through:
 
-| Feature | Description |
-|---------|-------------|
-| 🏛️ **Community Building** | Connect and collaborate with local change-makers |
-| 🌱 **Sustainability** | Drive environmental initiatives and eco-challenges |
-| 💡 **Innovation** | AI-powered insights and fraud detection |
-| 🤝 **Skill Exchange** | Share expertise and empower local talent |
-| 📊 **Impact Tracking** | Real-time analytics and community metrics |
+| Feature                | Description                                               |
+|------------------------|-----------------------------------------------------------|
+| 🏛️ Community Building  | Connect and collaborate with local change-makers         |
+| 🌱 Sustainability       | Drive environmental initiatives and eco-challenges       |
+| 💡 Innovation           | AI-powered insights and fraud detection                  |
+| 🤝 Skill Exchange       | Share expertise and empower local talent                 |
+| 📊 Impact Tracking      | Real-time analytics and community metrics                |
+
+---
 
 ## ⚡ Tech Stack
 
-### Frontend
+### 🔹 Frontend
+
 <p align="left">
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" alt="react" width="40" height="40"/>
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nextjs/nextjs-line.svg" alt="nextjs" width="40" height="40" style="background-color: white; border-radius: 5px; padding: 3px;"/>
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" alt="typescript" width="40" height="40"/>
-  <img src="https://www.vectorlogo.zone/logos/tailwindcss/tailwindcss-icon.svg" alt="tailwind" width="40" height="40"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" alt="React" width="40" height="40"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nextjs/nextjs-line.svg" alt="Next.js" width="40" height="40" style="background-color: white; border-radius: 5px; padding: 3px;"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" alt="TypeScript" width="40" height="40"/>
+  <img src="https://www.vectorlogo.zone/logos/tailwindcss/tailwindcss-icon.svg" alt="TailwindCSS" width="40" height="40"/>
 </p>
 
-### Backend
-<p align="left">
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="40" height="40"/>
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/fastapi/fastapi-original.svg" alt="fastapi" width="40" height="40"/>
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nextjs/nextjs-line.svg" alt="nextjs" width="40" height="40" style="background-color: white; border-radius: 5px; padding: 3px;"/>
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original.svg" alt="mongodb" width="40" height="40"/>
-</p>
-
-## 🏗️ Architecture
-
-```mermaid
-graph LR
-    A[Frontend - React] --> B[FastAPI Backend]
-    A --> C[Next.js Backend]
-    B --> D[(MongoDB)]
-    C --> D
-    B --> E[AI Services]
-    style A fill:#61DAFB
-    style B fill:#009688
-    style C fill:#000000
-    style D fill:#4DB33D
-    style E fill:#FF6B6B
-
-
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 📬 Contact
+### 🔸 Backend
 
 <p align="left">
-  <a href="mailto:contact@actify.com">
-    <img src="https://img.shields.io/badge/Email-contact%40actify.com-blue" alt="Email"/>
-  </a>
-  <a href="https://github.com/Dhritikrishna123/Actify">
-    <img src="https://img.shields.io/badge/GitHub-Actify-black" alt="GitHub"/>
-  </a>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="Python" width="40" height="40"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/fastapi/fastapi-original.svg" alt="FastAPI" width="40" height="40"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original.svg" alt="MongoDB" width="40" height="40"/>
 </p>
 
 ---
 
-<div align="center">
-  <strong>🌟 Actify – Where Community Action Meets Impact 🌟</strong>
-  <br/>
-  <sub>Made with ❤️ by the Actify Team</sub>
-</div>
+## 🏗️ System Architecture
+
+```mermaid
+graph LR
+    A[Frontend (React + Next.js)] --> B[Backend (FastAPI)]
+    A --> C[Backend (Next.js)]
+    B --> D[(MongoDB)]
+    C --> D
+    B --> E[AI Services]
+
+    style A fill:#61DAFB,stroke:#333,stroke-width:2px
+    style B fill:#009688,stroke:#333,stroke-width:2px
+    style C fill:#000000,stroke:#333,stroke-width:2px
+    style D fill:#4DB33D,stroke:#333,stroke-width:2px
+    style E fill:#FF6B6B,stroke:#333,stroke-width:2px
