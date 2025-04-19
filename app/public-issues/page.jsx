@@ -29,7 +29,8 @@ import {
 } from "lucide-react"
 
 export default function PublicIssuesPage() {
-  const { user } = useAuth()
+  const auth = useAuth() || {};
+  const { user, logout } = auth;
   const router = useRouter()
   const [activeFilter, setActiveFilter] = useState("all")
   const [isLoading, setIsLoading] = useState(true)
