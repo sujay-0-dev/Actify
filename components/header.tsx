@@ -4,7 +4,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -28,6 +27,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import LevelBadge from "@/components/gamification/level-badge";
 
+// Temporarily mock the auth context until it's properly implemented
+const mockUser = {
+  name: "John Doe",
+  avatar: "/placeholder.svg?height=40&width=40",
+  level: 3,
+  karma: "250",
+};
+
 interface Notification {
   id: number;
   title: string;
@@ -42,18 +49,9 @@ interface NavItem {
 }
 
 export default function Header(): React.ReactElement {
-  // Try/catch block to handle potential errors with useAuth
-  let user = null;
-  let logout = () => {};
-  
-  try {
-    const auth = useAuth();
-    user = auth?.user || null;
-    logout = auth?.logout || (() => {});
-  } catch (error) {
-    console.error("Auth context error:", error);
-    // Continue with user as null
-  }
+  // Use mock user data for now - DO NOT USE useAuth() here
+  const user = mockUser; // For testing purposes
+  const logout = () => console.log("Logout called");
 
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -63,7 +61,10 @@ export default function Header(): React.ReactElement {
     const handleScroll = (): void => {
       setIsScrolled(window.scrollY > 10);
     };
-    window.addEventListener("scroll", handleScroll);
+    
+    if (typeof window !== 'undefined') {
+      window.addEventListener("scroll", handleScroll);
+    }
 
     // Mock notifications
     setNotifications([
@@ -91,7 +92,11 @@ export default function Header(): React.ReactElement {
     ]);
     setHasUnread(true);
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener("scroll", handleScroll);
+      }
+    };
   }, []);
 
   const navItems: NavItem[] = [
