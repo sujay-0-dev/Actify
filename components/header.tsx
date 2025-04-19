@@ -1,3 +1,4 @@
+// File: components/header.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -40,15 +41,20 @@ interface NavItem {
   href: string;
 }
 
-interface User {
-  name: string;
-  avatar: string;
-  level?: number;
-  karma: number | string;
-}
-
 export default function Header(): React.ReactElement {
-  const { user, logout } = useAuth();
+  // Try/catch block to handle potential errors with useAuth
+  let user = null;
+  let logout = () => {};
+  
+  try {
+    const auth = useAuth();
+    user = auth?.user || null;
+    logout = auth?.logout || (() => {});
+  } catch (error) {
+    console.error("Auth context error:", error);
+    // Continue with user as null
+  }
+
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [hasUnread, setHasUnread] = useState<boolean>(false);

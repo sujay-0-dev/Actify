@@ -22,6 +22,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/theme-provider.tsx", "components/header.tsx", "components/how-it-works.jsx", "components/gamification/level-badge.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/theme-provider.tsx", "components/header.tsx", "components/how-it-works.tsx", "components/gamification/level-badge.tsx"],
   "exclude": ["node_modules"]
 }

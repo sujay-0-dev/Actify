@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { MapPin, PenToolIcon as Tool, Award } from "lucide-react"
-import Image from "next/image"
+import { MapPin, PenToolIcon, Award } from "lucide-react"
 
 export default function HowItWorks() {
   const steps = [
@@ -12,7 +11,7 @@ export default function HowItWorks() {
       color: "from-red-500 to-orange-500",
     },
     {
-      icon: Tool,
+      icon: PenToolIcon,
       title: "Skill Marketplace",
       description: "Verified users share skills & collaborate. Connect with trusted community members.",
       color: "from-blue-500 to-cyan-500",
@@ -30,7 +29,7 @@ export default function HowItWorks() {
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center text-center space-y-4 mb-12">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">How It Works</h2>
-          <p className="text-muted-foreground md:text-xl max-w-[800px]">
+          <p className="text-muted-foreground md:text-xl max-w-3xl">
             ActiSathi makes community engagement simple and rewarding through our three-step process
           </p>
         </div>
@@ -64,20 +63,21 @@ export default function HowItWorks() {
         </div>
 
         <div className="mt-16 flex justify-center">
-          <div className="relative w-full max-w-4xl h-[300px] rounded-xl overflow-hidden">
-            <Image
-              src="/placeholder.svg?height=300&width=1000"
-              alt="Interactive Infographic"
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-blue-600/80 flex items-center justify-center">
-              <div className="text-center text-white p-6">
-                <h3 className="text-2xl font-bold mb-2">See ActiSathi in Action</h3>
-                <p className="mb-4">Watch our interactive demo to learn more about how ActiSathi works</p>
-                <Button variant="outline" className="border-white text-white hover:bg-white/20">
-                  Watch Demo
-                </Button>
+          <div className="relative w-full max-w-4xl h-64 rounded-xl overflow-hidden">
+            <div className="absolute inset-0 bg-gray-300 flex items-center justify-center">
+              <img
+                src="/api/placeholder/1000/300"
+                alt="Interactive Infographic"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-blue-600/80 flex items-center justify-center">
+                <div className="text-center text-white p-6">
+                  <h3 className="text-2xl font-bold mb-2">See ActiSathi in Action</h3>
+                  <p className="mb-4">Watch our interactive demo to learn more about how ActiSathi works</p>
+                  <Button variant="outline" className="border-white text-white hover:bg-white/20">
+                    Watch Demo
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
