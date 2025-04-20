@@ -1,1 +1,0 @@
-# Trust API endpoints

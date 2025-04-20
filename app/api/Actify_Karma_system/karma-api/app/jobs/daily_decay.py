@@ -1,1 +1,0 @@
-# Daily karma decay job

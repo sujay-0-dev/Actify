@@ -38,12 +38,14 @@ import {
 import LevelBadge from "@/components/gamification/level-badge"
 
 export default function CommunityPage() {
-  const { user, loading } = useAuth()
+  const auth = useAuth() || {};
+  const { user, logout } = auth;
   const router = useRouter()
   const [activeTab, setActiveTab] = useState("discussions")
   const [newPostOpen, setNewPostOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("all")
+  const [loading, setLoading] = useState(false)
 
   // Mock data for discussions
   const discussions = [
@@ -247,8 +249,8 @@ export default function CommunityPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-12 h-12 border-t-2 border-b-2 border-indigo-600 rounded-full animate-spin"></div>
       </div>
     )
   }
@@ -256,9 +258,9 @@ export default function CommunityPage() {
   return (
     <div className="min-h-screen bg-muted/30">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-16">
+      <section className="py-16 text-white bg-gradient-to-r from-indigo-600 to-purple-600">
         <div className="container px-4 md:px-6">
-          <div className="grid gap-6 lg:grid-cols-2 items-center">
+          <div className="grid items-center gap-6 lg:grid-cols-2">
             <div>
               <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
                 Community Forums & Engagement
@@ -267,11 +269,11 @@ export default function CommunityPage() {
                 Join discussions, share ideas, and collaborate with your community. Earn Karma and badges as you
                 contribute.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 mt-8">
+              <div className="flex flex-col gap-4 mt-8 sm:flex-row">
                 <Dialog open={newPostOpen} onOpenChange={setNewPostOpen}>
                   <DialogTrigger asChild>
-                    <Button size="lg" variant="secondary" className="bg-white text-indigo-600 hover:bg-white/90">
-                      <PlusCircle className="mr-2 h-4 w-4" /> Start a Discussion
+                    <Button size="lg" variant="secondary" className="text-indigo-600 bg-white hover:bg-white/90">
+                      <PlusCircle className="w-4 h-4 mr-2" /> Start a Discussion
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[600px]">
@@ -283,7 +285,7 @@ export default function CommunityPage() {
                       </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleCreatePost}>
-                      <div className="space-y-4 py-4">
+                      <div className="py-4 space-y-4">
                         <div className="space-y-2">
                           <label htmlFor="title" className="text-sm font-medium">
                             Title
@@ -336,18 +338,18 @@ export default function CommunityPage() {
                     </form>
                   </DialogContent>
                 </Dialog>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/20" asChild>
+                <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/20" asChild>
                   <Link href="#discussions">Browse Discussions</Link>
                 </Button>
               </div>
             </div>
-            <div className="hidden lg:flex justify-end">
+            <div className="justify-end hidden lg:flex">
               <div className="relative w-[350px] h-[350px]">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-blob" />
-                <div className="absolute bottom-0 left-0 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-blob animation-delay-2000" />
-                <div className="relative z-10 bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white/10 blur-3xl animate-blob" />
+                <div className="absolute bottom-0 left-0 rounded-full w-72 h-72 bg-purple-500/10 blur-3xl animate-blob animation-delay-2000" />
+                <div className="relative z-10 p-6 border bg-white/10 backdrop-blur-sm rounded-xl border-white/20">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="h-12 w-12 rounded-full overflow-hidden">
+                    <div className="w-12 h-12 overflow-hidden rounded-full">
                       <Image src="/placeholder.svg?height=48&width=48" alt="User" width={48} height={48} />
                     </div>
                     <div>
@@ -356,9 +358,9 @@ export default function CommunityPage() {
                     </div>
                   </div>
                   <div className="space-y-4">
-                    <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                    <div className="p-3 border rounded-lg bg-white/5 border-white/10">
                       <div className="text-sm font-medium">Your Community Impact</div>
-                      <div className="mt-2 grid grid-cols-3 gap-2 text-center">
+                      <div className="grid grid-cols-3 gap-2 mt-2 text-center">
                         <div>
                           <div className="text-xl font-bold">12</div>
                           <div className="text-xs text-white/70">Posts</div>
@@ -373,17 +375,17 @@ export default function CommunityPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                    <div className="p-3 border rounded-lg bg-white/5 border-white/10">
                       <div className="text-sm font-medium">Recent Badges</div>
-                      <div className="mt-2 flex gap-2">
-                        <div className="p-2 bg-indigo-500/20 rounded-full">
-                          <Award className="h-4 w-4" />
+                      <div className="flex gap-2 mt-2">
+                        <div className="p-2 rounded-full bg-indigo-500/20">
+                          <Award className="w-4 h-4" />
                         </div>
-                        <div className="p-2 bg-purple-500/20 rounded-full">
-                          <MessageSquare className="h-4 w-4" />
+                        <div className="p-2 rounded-full bg-purple-500/20">
+                          <MessageSquare className="w-4 h-4" />
                         </div>
-                        <div className="p-2 bg-pink-500/20 rounded-full">
-                          <ThumbsUp className="h-4 w-4" />
+                        <div className="p-2 rounded-full bg-pink-500/20">
+                          <ThumbsUp className="w-4 h-4" />
                         </div>
                       </div>
                     </div>
@@ -398,13 +400,13 @@ export default function CommunityPage() {
       {/* Main Content */}
       <section id="discussions" className="py-12">
         <div className="container px-4 md:px-6">
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid gap-8 lg:grid-cols-3">
             {/* Main Content Area */}
-            <div className="lg:col-span-2 space-y-8">
+            <div className="space-y-8 lg:col-span-2">
               {/* Search and Filter */}
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col gap-4 sm:flex-row">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                  <Search className="absolute w-4 h-4 text-gray-500 -translate-y-1/2 left-3 top-1/2" />
                   <Input
                     placeholder="Search discussions..."
                     className="pl-10"
@@ -415,7 +417,7 @@ export default function CommunityPage() {
                 <div className="flex gap-2">
                   <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                     <SelectTrigger className="w-[180px]">
-                      <Filter className="mr-2 h-4 w-4" />
+                      <Filter className="w-4 h-4 mr-2" />
                       <SelectValue placeholder="Filter by category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -429,7 +431,7 @@ export default function CommunityPage() {
                   <Dialog open={newPostOpen} onOpenChange={setNewPostOpen}>
                     <DialogTrigger asChild>
                       <Button>
-                        <PlusCircle className="mr-2 h-4 w-4" /> New Post
+                        <PlusCircle className="w-4 h-4 mr-2" /> New Post
                       </Button>
                     </DialogTrigger>
                   </Dialog>
@@ -438,25 +440,25 @@ export default function CommunityPage() {
 
               {/* Tabs */}
               <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid grid-cols-3 w-full">
+                <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="discussions">Discussions</TabsTrigger>
                   <TabsTrigger value="events">Events</TabsTrigger>
                   <TabsTrigger value="polls">Polls</TabsTrigger>
                 </TabsList>
 
                 {/* Discussions Tab */}
-                <TabsContent value="discussions" className="space-y-6 mt-6">
+                <TabsContent value="discussions" className="mt-6 space-y-6">
                   {filteredDiscussions.length > 0 ? (
                     filteredDiscussions.map((discussion) => (
                       <Card
                         key={discussion.id}
-                        className="overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                        className="overflow-hidden transition-shadow duration-300 hover:shadow-lg"
                       >
                         <CardHeader className="pb-2">
-                          <div className="flex justify-between items-start">
+                          <div className="flex items-start justify-between">
                             <div className="flex items-start gap-3">
                               <div className="relative">
-                                <Avatar className="h-10 w-10">
+                                <Avatar className="w-10 h-10">
                                   <AvatarImage src={discussion.image} alt={discussion.author} />
                                   <AvatarFallback>{discussion.author.charAt(0)}</AvatarFallback>
                                 </Avatar>
@@ -466,11 +468,11 @@ export default function CommunityPage() {
                               </div>
                               <div>
                                 <Link href={`/community/discussions/${discussion.id}`}>
-                                  <CardTitle className="text-lg hover:text-indigo-600 transition-colors">
+                                  <CardTitle className="text-lg transition-colors hover:text-indigo-600">
                                     {discussion.title}
                                   </CardTitle>
                                 </Link>
-                                <div className="flex items-center text-sm text-muted-foreground mt-1">
+                                <div className="flex items-center mt-1 text-sm text-muted-foreground">
                                   <span>{discussion.author}</span>
                                   <span className="mx-2">•</span>
                                   <span>{discussion.time}</span>
@@ -490,18 +492,18 @@ export default function CommunityPage() {
                             ))}
                           </div>
                         </CardContent>
-                        <CardFooter className="border-t pt-4 flex justify-between">
+                        <CardFooter className="flex justify-between pt-4 border-t">
                           <div className="flex items-center gap-4">
                             <div className="flex items-center text-sm text-muted-foreground">
-                              <MessageSquare className="h-4 w-4 mr-1" />
+                              <MessageSquare className="w-4 h-4 mr-1" />
                               {discussion.replies} replies
                             </div>
                             <div className="flex items-center text-sm text-muted-foreground">
-                              <Eye className="h-4 w-4 mr-1" />
+                              <Eye className="w-4 h-4 mr-1" />
                               {discussion.views} views
                             </div>
                             <div className="flex items-center text-sm text-muted-foreground">
-                              <ThumbsUp className="h-4 w-4 mr-1" />
+                              <ThumbsUp className="w-4 h-4 mr-1" />
                               {discussion.likes} likes
                             </div>
                           </div>
@@ -512,8 +514,8 @@ export default function CommunityPage() {
                       </Card>
                     ))
                   ) : (
-                    <div className="text-center py-12">
-                      <MessageSquare className="h-12 w-12 mx-auto text-gray-400" />
+                    <div className="py-12 text-center">
+                      <MessageSquare className="w-12 h-12 mx-auto text-gray-400" />
                       <h3 className="mt-4 text-lg font-medium">No discussions found</h3>
                       <p className="text-muted-foreground">Try adjusting your search or filter criteria</p>
                       <Button
@@ -530,11 +532,11 @@ export default function CommunityPage() {
                 </TabsContent>
 
                 {/* Events Tab */}
-                <TabsContent value="events" className="space-y-6 mt-6">
-                  <div className="grid md:grid-cols-2 gap-6">
+                <TabsContent value="events" className="mt-6 space-y-6">
+                  <div className="grid gap-6 md:grid-cols-2">
                     {events.map((event) => (
-                      <Card key={event.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                        <div className="relative h-48 w-full">
+                      <Card key={event.id} className="overflow-hidden transition-shadow duration-300 hover:shadow-lg">
+                        <div className="relative w-full h-48">
                           <Image
                             src={event.image || "/placeholder.svg"}
                             alt={event.title}
@@ -544,8 +546,8 @@ export default function CommunityPage() {
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                           <div className="absolute bottom-4 left-4 right-4">
                             <h3 className="text-xl font-bold text-white">{event.title}</h3>
-                            <div className="flex items-center text-sm text-white/80 mt-1">
-                              <Calendar className="h-4 w-4 mr-1" />
+                            <div className="flex items-center mt-1 text-sm text-white/80">
+                              <Calendar className="w-4 h-4 mr-1" />
                               <span>
                                 {event.date} • {event.time}
                               </span>
@@ -555,17 +557,17 @@ export default function CommunityPage() {
                         <CardContent className="pt-4">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center text-sm text-muted-foreground">
-                              <MapPin className="h-4 w-4 mr-1" />
+                              <MapPin className="w-4 h-4 mr-1" />
                               <span>{event.location}</span>
                             </div>
                             <div className="flex items-center text-sm text-muted-foreground">
-                              <Users className="h-4 w-4 mr-1" />
+                              <Users className="w-4 h-4 mr-1" />
                               <span>{event.attendees} attending</span>
                             </div>
                           </div>
                           <p className="text-sm text-muted-foreground">{event.description}</p>
                         </CardContent>
-                        <CardFooter className="border-t pt-4 flex justify-between">
+                        <CardFooter className="flex justify-between pt-4 border-t">
                           <div className="text-sm text-muted-foreground">
                             Organized by: <span className="font-medium">{event.organizer}</span>
                           </div>
@@ -580,10 +582,10 @@ export default function CommunityPage() {
                 </TabsContent>
 
                 {/* Polls Tab */}
-                <TabsContent value="polls" className="space-y-6 mt-6">
-                  <div className="grid md:grid-cols-2 gap-6">
+                <TabsContent value="polls" className="mt-6 space-y-6">
+                  <div className="grid gap-6 md:grid-cols-2">
                     {polls.map((poll) => (
-                      <Card key={poll.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                      <Card key={poll.id} className="overflow-hidden transition-shadow duration-300 hover:shadow-lg">
                         <CardHeader>
                           <CardTitle className="text-lg">{poll.question}</CardTitle>
                           <p className="text-sm text-muted-foreground">
@@ -600,7 +602,7 @@ export default function CommunityPage() {
                                     <span>{option.text}</span>
                                     <span className="font-medium">{percentage}%</span>
                                   </div>
-                                  <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                                  <div className="w-full h-2 overflow-hidden rounded-full bg-muted">
                                     <div className="h-full bg-indigo-600" style={{ width: `${percentage}%` }} />
                                   </div>
                                   <p className="text-xs text-muted-foreground">{option.votes} votes</p>
@@ -609,7 +611,7 @@ export default function CommunityPage() {
                             })}
                           </div>
                         </CardContent>
-                        <CardFooter className="border-t pt-4">
+                        <CardFooter className="pt-4 border-t">
                           <Button className="w-full">Vote Now</Button>
                         </CardFooter>
                       </Card>
@@ -631,25 +633,25 @@ export default function CommunityPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span className="text-sm">Active Members</span>
                       <span className="font-medium">1,245</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span className="text-sm">Discussions This Week</span>
                       <span className="font-medium">87</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span className="text-sm">Issues Resolved</span>
                       <span className="font-medium">32</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span className="text-sm">Upcoming Events</span>
                       <span className="font-medium">5</span>
                     </div>
                   </div>
                 </CardContent>
-                <CardFooter className="border-t pt-4">
+                <CardFooter className="pt-4 border-t">
                   <Button variant="outline" className="w-full">
                     View Community Stats
                   </Button>
@@ -678,11 +680,11 @@ export default function CommunityPage() {
                           <div className="flex items-center justify-between">
                             <div className="font-medium">{contributor.name}</div>
                             <div className="flex items-center text-xs text-indigo-600">
-                              <Award className="h-3 w-3 mr-1" />
+                              <Award className="w-3 h-3 mr-1" />
                               <span>{contributor.karma} Karma</span>
                             </div>
                           </div>
-                          <div className="text-xs text-muted-foreground mt-1">
+                          <div className="mt-1 text-xs text-muted-foreground">
                             {contributor.posts} posts • {contributor.comments} comments
                           </div>
                           <div className="flex flex-wrap gap-1 mt-2">
@@ -697,7 +699,7 @@ export default function CommunityPage() {
                     ))}
                   </div>
                 </CardContent>
-                <CardFooter className="border-t pt-4">
+                <CardFooter className="pt-4 border-t">
                   <Button variant="outline" className="w-full">
                     View All Contributors
                   </Button>
@@ -712,8 +714,8 @@ export default function CommunityPage() {
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
-                      <div className="p-2 rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
-                        <MessageSquare className="h-4 w-4" />
+                      <div className="p-2 text-indigo-600 bg-indigo-100 rounded-full dark:bg-indigo-900/30 dark:text-indigo-400">
+                        <MessageSquare className="w-4 h-4" />
                       </div>
                       <div>
                         <div className="font-medium">Create Quality Posts</div>
@@ -721,8 +723,8 @@ export default function CommunityPage() {
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="p-2 rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
-                        <ThumbsUp className="h-4 w-4" />
+                      <div className="p-2 text-purple-600 bg-purple-100 rounded-full dark:bg-purple-900/30 dark:text-purple-400">
+                        <ThumbsUp className="w-4 h-4" />
                       </div>
                       <div>
                         <div className="font-medium">Helpful Comments</div>
@@ -730,8 +732,8 @@ export default function CommunityPage() {
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="p-2 rounded-full bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
-                        <Calendar className="h-4 w-4" />
+                      <div className="p-2 text-green-600 bg-green-100 rounded-full dark:bg-green-900/30 dark:text-green-400">
+                        <Calendar className="w-4 h-4" />
                       </div>
                       <div>
                         <div className="font-medium">Organize Events</div>
@@ -740,7 +742,7 @@ export default function CommunityPage() {
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="p-2 rounded-full bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
-                        <TrendingUp className="h-4 w-4" />
+                        <TrendingUp className="w-4 h-4" />
                       </div>
                       <div>
                         <div className="font-medium">Regular Participation</div>
@@ -757,20 +759,20 @@ export default function CommunityPage() {
 
       {/* Call to Action */}
       <section className="py-12 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-900 dark:to-indigo-950">
-        <div className="container px-4 md:px-6 text-center">
+        <div className="container px-4 text-center md:px-6">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Level Up in Your Community</h2>
           <p className="mt-4 text-gray-600 md:text-lg max-w-[800px] mx-auto dark:text-gray-400">
             Join discussions, organize events, and help your neighbors. Earn Karma, unlock badges, and make a real
             difference.
           </p>
-          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white" asChild>
+          <div className="flex flex-col justify-center gap-4 mt-8 sm:flex-row">
+            <Button size="lg" className="text-white bg-gradient-to-r from-indigo-600 to-purple-600" asChild>
               <Link href="/register">Join the Community</Link>
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="border-indigo-200 text-indigo-600 hover:bg-indigo-50 dark:border-indigo-800 dark:text-indigo-400 dark:hover:bg-indigo-900/20"
+              className="text-indigo-600 border-indigo-200 hover:bg-indigo-50 dark:border-indigo-800 dark:text-indigo-400 dark:hover:bg-indigo-900/20"
               asChild
             >
               <Link href="/how-it-works">Learn More</Link>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { useAuth } from "@/context/auth-context"
@@ -27,51 +27,21 @@ import {
   Home,
   FlameIcon as Fire,
   ThumbsUp,
-  Clock,
 } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-
-// Mock API service for similar report checking
-const checkSimilarReports = async (location, category, type, imageData) => {
-  // In a real implementation, this would be an API call
-  // For demo, we'll simulate a 40% chance of finding a similar report
-  await new Promise((resolve) => setTimeout(resolve, 1500)) // Simulate API delay
-
-  const hasSimilar = Math.random() < 0.4
-
-  if (hasSimilar) {
-    return {
-      found: true,
-      report: {
-        id: Math.floor(Math.random() * 100) + 1,
-        title: `Similar ${type} issue near ${location.split(",")[0]}`,
-        description: "A similar issue was reported in this area recently.",
-        status: "verified",
-        upvotes: Math.floor(Math.random() * 10) + 1,
-        distance: (Math.random() * 0.5).toFixed(2) + " km away",
-        createdAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-      },
-    }
-  }
-
-  return { found: false }
-}
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 export default function CreatePublicIssueReportPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const { toast } = useToast()
-  const mapRef = useRef(null)
 
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
@@ -84,11 +54,9 @@ export default function CreatePublicIssueReportPage() {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false)
   const [locationError, setLocationError] = useState(null)
   const [activeTab, setActiveTab] = useState("details")
-  const [isCheckingDuplicates, setIsCheckingDuplicates] = useState(false)
-  const [similarReport, setSimilarReport] = useState(null)
-  const [showSimilarDialog, setShowSimilarDialog] = useState(false)
-  const [map, setMap] = useState(null)
-  const [marker, setMarker] = useState(null)
+  const [duplicateReport, setDuplicateReport] = useState(null)
+  const [showDuplicateDialog, setShowDuplicateDialog] = useState(false)
+  const [mapUrl, setMapUrl] = useState("")
 
   useEffect(() => {
     if (!loading && !user) {
@@ -96,44 +64,15 @@ export default function CreatePublicIssueReportPage() {
     }
   }, [user, loading, router])
 
-  // Initialize map when coordinates are available
   useEffect(() => {
-    if (coordinates && mapRef.current && !map) {
-      // This is a mock implementation - in production, you'd use a real map library
-      // like Google Maps, Mapbox, or Leaflet
-      const mockMap = {
-        setCenter: (coords) => {
-          console.log("Map center set to:", coords)
-          return mockMap
-        },
-        setZoom: (level) => {
-          console.log("Map zoom set to:", level)
-          return mockMap
-        },
-      }
-
-      const mockMarker = {
-        setPosition: (coords) => {
-          console.log("Marker position set to:", coords)
-          return mockMarker
-        },
-      }
-
-      setMap(mockMap)
-      setMarker(mockMarker)
-
-      // In a real implementation, you'd initialize the map here
-      // and set the marker at the coordinates
+    // Update map URL when coordinates change
+    if (coordinates) {
+      const { lat, lng } = coordinates
+      setMapUrl(
+        `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7C${lat},${lng}&key=YOUR_GOOGLE_MAPS_API_KEY`,
+      )
     }
-  }, [coordinates, mapRef, map])
-
-  // Update map when coordinates change
-  useEffect(() => {
-    if (map && marker && coordinates) {
-      map.setCenter(coordinates)
-      marker.setPosition(coordinates)
-    }
-  }, [coordinates, map, marker])
+  }, [coordinates])
 
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
@@ -149,23 +88,23 @@ export default function CreatePublicIssueReportPage() {
         const { latitude, longitude } = position.coords
         setCoordinates({ lat: latitude, lng: longitude })
 
+        // Reverse geocoding to get address from coordinates
         try {
-          // In a real app, this would be a call to a geocoding service
-          // For now, we'll simulate the API call
-          const apiKey = "YOUR_OPENCAGE_API_KEY";
-          const response = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`);
-          if (!response.ok) throw new Error("Geocoding failed");
-          
-          const data = await response.json();
-          // For demo, we'll generate a random address based on the coordinates
-          const address = `${Math.round(latitude * 100) / 100}° N, ${Math.round(longitude * 100) / 100}° E, Local Area`
-          setLocation(address)
+          const response = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=YOUR_GOOGLE_MAPS_API_KEY`,
+          )
+          const data = await response.json()
+          if (data.results && data.results.length > 0) {
+            setLocation(data.results[0].formatted_address)
+          } else {
+            setLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`)
+          }
         } catch (error) {
           console.error("Error getting address:", error)
           setLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`)
-        } finally {
-          setIsLoadingLocation(false)
         }
+
+        setIsLoadingLocation(false)
       },
       (error) => {
         setLocationError(`Error getting location: ${error.message}`)
@@ -188,8 +127,7 @@ export default function CreatePublicIssueReportPage() {
       return
     }
 
-    // In a real app, you would upload these to a server
-    // For this demo, we'll just create object URLs
+    // Create object URLs for preview
     const newImages = files.map((file) => ({
       id: Math.random().toString(36).substring(2),
       name: file.name,
@@ -205,76 +143,57 @@ export default function CreatePublicIssueReportPage() {
     setImages(newImages)
   }
 
-  const checkForSimilarIssues = async () => {
-    if (!coordinates || !category || !type || images.length === 0) {
-      toast({
-        title: "Missing information",
-        description: "Please fill in all required fields and add at least one image",
-        variant: "warning",
-      })
-      return false
-    }
-
-    setIsCheckingDuplicates(true)
-
+  const checkForDuplicateReport = async (formData) => {
     try {
-      // Extract image data for similarity checking
-      // In a real app, you'd send the actual image data or features
-      const imageData = images.map((img) => ({
-        id: img.id,
-        name: img.name,
-      }))
+      // Call the image processing API to check for duplicates
+      const response = await fetch("/api/reports/check-duplicate", {
+        method: "POST",
+        body: formData,
+      })
 
-      const result = await checkSimilarReports(location, category, type, imageData)
+      const result = await response.json()
 
-      if (result.found) {
-        setSimilarReport(result.report)
-        setShowSimilarDialog(true)
+      if (result.isDuplicate) {
+        setDuplicateReport(result.originalReport)
+        setShowDuplicateDialog(true)
         return true
       }
 
       return false
     } catch (error) {
-      console.error("Error checking for similar reports:", error)
-      toast({
-        title: "Error",
-        description: "Failed to check for similar reports. Proceeding with submission.",
-        variant: "destructive",
-      })
+      console.error("Error checking for duplicate report:", error)
       return false
-    } finally {
-      setIsCheckingDuplicates(false)
     }
   }
 
-  const upvoteExistingReport = async () => {
-    setIsSubmitting(true)
-
+  const upvoteExistingReport = async (reportId) => {
     try {
-      // In a real app, this would be an API call to upvote the existing report
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const response = await fetch(`/api/reports/${reportId}/upvote`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: user.id }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to upvote report")
+      }
 
       toast({
         title: "Report upvoted",
-        description: "Thank you for contributing! Your upvote helps prioritize this issue.",
-        action: (
-          <div className="p-1 text-green-600 bg-green-100 rounded-full dark:bg-green-900/30 dark:text-green-400">
-            <ThumbsUp className="w-4 h-4" />
-          </div>
-        ),
+        description: "Thank you for your contribution!",
+        variant: "success",
       })
 
-      router.push(`/public-issues/${similarReport.id}`)
+      router.push(`/public-issues/${reportId}`)
     } catch (error) {
       console.error("Error upvoting report:", error)
       toast({
-        title: "Error",
-        description: "Failed to upvote the existing report. Please try again.",
+        title: "Error upvoting report",
+        description: error.message || "Please try again later",
         variant: "destructive",
       })
-    } finally {
-      setIsSubmitting(false)
-      setShowSimilarDialog(false)
     }
   }
 
@@ -287,13 +206,6 @@ export default function CreatePublicIssueReportPage() {
         description: "Please fill in all required fields",
         variant: "destructive",
       })
-      return
-    }
-
-    // First, check for similar reports
-    const hasSimilar = await checkForSimilarIssues()
-    if (hasSimilar) {
-      // The dialog will handle the upvote flow
       return
     }
 
@@ -315,9 +227,25 @@ export default function CreatePublicIssueReportPage() {
         formData.append("images", image.file)
       })
 
-      // Submit to API
-      // This is a mock implementation - in production, you'd call your actual API
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      // Check for duplicate reports first
+      const isDuplicate = await checkForDuplicateReport(formData)
+
+      if (isDuplicate) {
+        setIsSubmitting(false)
+        return // Stop submission process as we'll handle it in the duplicate dialog
+      }
+
+      // Submit to API if no duplicate found
+      const response = await fetch("/api/reports", {
+        method: "POST",
+        body: formData,
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to submit report")
+      }
 
       toast({
         title: "Report submitted successfully",
@@ -607,39 +535,24 @@ export default function CreatePublicIssueReportPage() {
                   )}
                 </div>
 
-                <div
-                  ref={mapRef}
-                  className="relative h-48 mb-3 overflow-hidden bg-gray-100 rounded-md dark:bg-gray-800"
-                >
+                <div className="relative h-48 mb-3 overflow-hidden bg-gray-100 rounded-md dark:bg-gray-800">
                   {coordinates ? (
-                    // In a real app, this would be an actual map component
-                    // For now, we'll show a placeholder with the coordinates
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <div className="p-2 text-center rounded-lg bg-white/90 dark:bg-gray-800/90">
-                        <p className="font-medium text-gray-800 dark:text-gray-200">Map View</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          Lat: {coordinates.lat.toFixed(6)}
-                          <br />
-                          Lng: {coordinates.lng.toFixed(6)}
-                        </p>
-                      </div>
-                      <div className="absolute z-10 transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-                        <div className="flex items-center justify-center w-8 h-8 text-white bg-red-500 border-2 border-white rounded-full">
-                          <MapPin className="w-4 h-4" />
-                        </div>
-                      </div>
-                      <div className="absolute inset-0 z-0">
-                        <Image
-                          src={`https://maps.googleapis.com/maps/api/staticmap?center=${coordinates.lat},${coordinates.lng}&zoom=15&size=400x200&markers=color:red%7C${coordinates.lat},${coordinates.lng}&key=YOUR_API_KEY`}
-                          alt="Map location"
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    </div>
+                    <Image
+                      src={mapUrl || "/placeholder.svg?height=200&width=400"}
+                      alt="Map location"
+                      fill
+                      className="object-cover"
+                    />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <p className="text-gray-500 dark:text-gray-400">Click "Get my location" to see the map</p>
+                      <p className="text-gray-500 dark:text-gray-400">Use "Get my location" to see map</p>
+                    </div>
+                  )}
+                  {coordinates && (
+                    <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+                      <div className="flex items-center justify-center w-8 h-8 text-white bg-red-500 border-2 border-white rounded-full">
+                        <MapPin className="w-4 h-4" />
+                      </div>
                     </div>
                   )}
                 </div>
@@ -656,9 +569,7 @@ export default function CreatePublicIssueReportPage() {
 
               <TabsContent value="media" className="space-y-6">
                 <div className="space-y-2">
-                  <Label>
-                    Images (Max 3) <span className="text-red-500">*</span>
-                  </Label>
+                  <Label>Images (Max 3)</Label>
                   <div className="grid grid-cols-3 gap-4">
                     {images.map((image) => (
                       <div
@@ -720,13 +631,13 @@ export default function CreatePublicIssueReportPage() {
                   </Button>
                   <Button
                     type="submit"
-                    disabled={isSubmitting || isCheckingDuplicates}
+                    disabled={isSubmitting}
                     className="flex-1 text-white bg-blue-600 hover:bg-blue-700"
                   >
-                    {isSubmitting || isCheckingDuplicates ? (
+                    {isSubmitting ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        {isCheckingDuplicates ? "Checking for similar reports..." : "Submitting..."}
+                        Submitting...
                       </>
                     ) : (
                       <>
@@ -752,53 +663,68 @@ export default function CreatePublicIssueReportPage() {
         </form>
       </Card>
 
-      {/* Similar Report Dialog */}
-      <AlertDialog open={showSimilarDialog} onOpenChange={setShowSimilarDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Similar Report Found</AlertDialogTitle>
-            <AlertDialogDescription>We found a similar report already in our system:</AlertDialogDescription>
-          </AlertDialogHeader>
+      {/* Duplicate Report Dialog */}
+      <Dialog open={showDuplicateDialog} onOpenChange={setShowDuplicateDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Similar Report Found</DialogTitle>
+            <DialogDescription>We found a similar report already submitted in this area.</DialogDescription>
+          </DialogHeader>
 
-          {similarReport && (
-            <div className="p-4 my-4 border rounded-md">
-              <h3 className="text-lg font-medium">{similarReport.title}</h3>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{similarReport.description}</p>
-              <div className="flex flex-wrap gap-2 mt-2 text-xs text-gray-500 dark:text-gray-400">
-                <span className="flex items-center">
-                  <MapPin className="w-3 h-3 mr-1" />
-                  {similarReport.distance}
-                </span>
-                <span className="flex items-center">
-                  <ThumbsUp className="w-3 h-3 mr-1" />
-                  {similarReport.upvotes} upvotes
-                </span>
-                <span className="flex items-center">
-                  <Clock className="w-3 h-3 mr-1" />
-                  Reported on {similarReport.createdAt}
-                </span>
+          {duplicateReport && (
+            <div className="space-y-4">
+              <div className="p-4 border rounded-lg">
+                <h3 className="font-medium">{duplicateReport.title}</h3>
+                <p className="mt-1 text-sm text-gray-500">{duplicateReport.description.substring(0, 100)}...</p>
+                <div className="flex items-center mt-2 text-sm">
+                  <MapPin className="w-3 h-3 mr-1 text-gray-500" />
+                  <span className="text-gray-500">{duplicateReport.location}</span>
+                </div>
+                {duplicateReport.photo_url && (
+                  <div className="relative h-32 mt-3 overflow-hidden rounded">
+                    <Image
+                      src={duplicateReport.photo_url || "/placeholder.svg"}
+                      alt="Report image"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="text-center">
+                <p className="text-sm">Would you like to upvote the existing report instead?</p>
               </div>
             </div>
           )}
 
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={upvoteExistingReport} disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <ThumbsUp className="w-4 h-4 mr-2" />
-                  Upvote Existing Report
-                </>
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+          <DialogFooter className="flex sm:justify-between">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setShowDuplicateDialog(false)
+                setDuplicateReport(null)
+              }}
+            >
+              Create New Report Anyway
+            </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                if (duplicateReport) {
+                  upvoteExistingReport(duplicateReport.id)
+                  setShowDuplicateDialog(false)
+                }
+              }}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              <ThumbsUp className="w-4 h-4 mr-2" />
+              Upvote Existing
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

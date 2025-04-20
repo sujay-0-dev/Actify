@@ -1,1 +1,0 @@
-# KarmaCash API endpoints
