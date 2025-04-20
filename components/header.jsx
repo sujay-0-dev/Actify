@@ -1,121 +1,82 @@
-// File: components/header.tsx
-"use client";
+"use client"
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import {
-  Menu,
-  Search,
-  Bell,
-  User,
-  LogOut,
-  Settings,
-  Award,
-  ChevronDown,
-} from "lucide-react";
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/context/auth-context"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Menu, Search, Bell, User, LogOut, Settings, Award, ChevronDown } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
-import LevelBadge from "@/components/gamification/level-badge";
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
 
-// Temporarily mock the auth context until it's properly implemented
-const mockUser = {
-  name: "John Doe",
-  avatar: "/placeholder.svg?height=40&width=40",
-  level: 3,
-  karma: "250",
-};
-
-interface Notification {
-  id: number;
-  title: string;
-  message: string;
-  read: boolean;
-  type: "achievement" | "challenge" | "karma";
-}
-
-interface NavItem {
-  name: string;
-  href: string;
-}
-
-export default function Header(): React.ReactElement {
-  // Use mock user data for now - DO NOT USE useAuth() here
-  const user = mockUser; // For testing purposes
-  const logout = () => console.log("Logout called");
-
-  const [isScrolled, setIsScrolled] = useState<boolean>(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [hasUnread, setHasUnread] = useState<boolean>(false);
+export default function Header() {
+  const auth = useAuth() || {};
+  const { user, logout } = auth;
+  const router = useRouter()
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [notifications, setNotifications] = useState([])
+  const [hasUnread, setHasUnread] = useState(false)
 
   useEffect(() => {
-    const handleScroll = (): void => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    
-    if (typeof window !== 'undefined') {
-      window.addEventListener("scroll", handleScroll);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10)
     }
+    window.addEventListener("scroll", handleScroll)
 
     // Mock notifications
-    setNotifications([
-      {
-        id: 1,
-        title: "New badge earned!",
-        message: "You've earned the 'Community Starter' badge",
-        read: false,
-        type: "achievement",
-      },
-      {
-        id: 2,
-        title: "Challenge completed!",
-        message: "You've completed the 'Plant a Tree' challenge",
-        read: false,
-        type: "challenge",
-      },
-      {
-        id: 3,
-        title: "Karma points awarded",
-        message: "+15 Karma for reporting a public issue",
-        read: true,
-        type: "karma",
-      },
-    ]);
-    setHasUnread(true);
+    if (user) {
+      setNotifications([
+        {
+          id: 1,
+          title: "New badge earned!",
+          message: "You've earned the 'Community Starter' badge",
+          read: false,
+          type: "achievement",
+        },
+        {
+          id: 2,
+          title: "Challenge completed!",
+          message: "You've completed the 'Plant a Tree' challenge",
+          read: false,
+          type: "challenge",
+        },
+        {
+          id: 3,
+          title: "Karma points awarded",
+          message: "+15 Karma for reporting a public issue",
+          read: true,
+          type: "karma",
+        },
+      ])
+      setHasUnread(true)
+    }
 
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, []);
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [user])
 
-  const navItems: NavItem[] = [
+  const navItems = [
     { name: "Home", href: "/" },
-    { name: "Public Issue Reporting", href: "/public-issues" },
+    { name: "Public Issues", href: "/public-issues" },
     { name: "Skill Sharing", href: "/skill-sharing" },
     { name: "Marketplace", href: "/marketplace" },
-    { name: "Community", href: "/community" },
-    { name: "Welfare Schemes", href: "/welfare-schemes" },
     { name: "Eco Challenges", href: "/eco-challenges" },
-  ];
+  ]
 
   return (
     <header
       className={cn(
         "sticky top-0 z-50 w-full transition-all duration-200",
-        isScrolled
-          ? "bg-white shadow-sm dark:bg-gray-900"
-          : "bg-white dark:bg-gray-900"
+        isScrolled ? "bg-white shadow-sm dark:bg-gray-900" : "bg-white dark:bg-gray-900",
       )}
     >
       <div className="container flex items-center justify-between h-16">
@@ -124,15 +85,14 @@ export default function Header(): React.ReactElement {
             <div className="relative w-8 h-8">
               <Image
                 src="/placeholder.svg?height=32&width=32"
-                alt="ActiSathi Logo"
-                fill
+                alt="Actify Logo"
+                width={32}
+                height={32}
                 className="rounded-md"
               />
             </div>
-            <span
-              className="text-2xl font-bold text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text"
-            >
-              ActiSathi
+            <span className="text-2xl font-bold text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text">
+              Actify
             </span>
           </Link>
           <nav className="hidden gap-6 md:flex">
@@ -148,14 +108,10 @@ export default function Header(): React.ReactElement {
           </nav>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Search"
-            className="text-gray-700 dark:text-gray-300"
-          >
+          <Button variant="ghost" size="icon" aria-label="Search" className="text-gray-700 dark:text-gray-300">
             <Search className="w-5 h-5" />
           </Button>
+
           {user ? (
             <>
               <DropdownMenu>
@@ -169,8 +125,8 @@ export default function Header(): React.ReactElement {
                     <Bell className="w-5 h-5" />
                     {hasUnread && (
                       <span className="absolute flex w-2 h-2 top-1 right-1">
-                        <span className="absolute inline-flex w-full h-full bg-indigo-400 rounded-full opacity-75 animate-ping" />
-                        <span className="relative inline-flex w-2 h-2 bg-indigo-500 rounded-full" />
+                        <span className="absolute inline-flex w-full h-full bg-indigo-400 rounded-full opacity-75 animate-ping"></span>
+                        <span className="relative inline-flex w-2 h-2 bg-indigo-500 rounded-full"></span>
                       </span>
                     )}
                   </Button>
@@ -188,8 +144,7 @@ export default function Header(): React.ReactElement {
                         key={notification.id}
                         className={cn(
                           "px-4 py-3 border-b last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer",
-                          !notification.read &&
-                            "bg-indigo-50 dark:bg-indigo-900/20"
+                          !notification.read && "bg-indigo-50 dark:bg-indigo-900/20",
                         )}
                       >
                         <div className="flex items-start gap-3">
@@ -199,8 +154,8 @@ export default function Header(): React.ReactElement {
                               notification.type === "achievement"
                                 ? "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400"
                                 : notification.type === "challenge"
-                                ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
-                                : "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400"
+                                  ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
+                                  : "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400",
                             )}
                           >
                             {notification.type === "achievement" ? (
@@ -212,15 +167,9 @@ export default function Header(): React.ReactElement {
                             )}
                           </div>
                           <div className="flex-1">
-                            <p className="text-sm font-medium">
-                              {notification.title}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {notification.message}
-                            </p>
-                            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-                              Just now
-                            </p>
+                            <p className="text-sm font-medium">{notification.title}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{notification.message}</p>
+                            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">Just now</p>
                           </div>
                         </div>
                       </div>
@@ -233,25 +182,26 @@ export default function Header(): React.ReactElement {
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="flex items-center gap-2 px-2">
                     <div className="relative">
                       <Avatar className="w-8 h-8">
-                        <AvatarImage src={user.avatar} alt={user.name} />
-                        <AvatarFallback>
-                          {user.name ? user.name.charAt(0).toUpperCase() : "?"}
-                        </AvatarFallback>
+                        <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+                        <AvatarFallback>{user.name?.charAt(0) || "U"}</AvatarFallback>
                       </Avatar>
                       <div className="absolute -bottom-1 -right-1">
-                        <LevelBadge level={user.level || 1} size="sm" />
+                        <Badge className="h-4 w-4 flex items-center justify-center text-[10px] bg-yellow-500 p-0">
+                          {user.level || 1}
+                        </Badge>
                       </div>
                     </div>
                     <div className="flex flex-col items-start text-sm">
                       <span className="font-medium">{user.name}</span>
                       <div className="flex items-center">
                         <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">
-                          {user.karma + " Karma"}
+                          {user.karma || 0} Karma
                         </span>
                       </div>
                     </div>
@@ -278,10 +228,7 @@ export default function Header(): React.ReactElement {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={logout}
-                    className="flex items-center text-red-600 focus:text-red-600"
-                  >
+                  <DropdownMenuItem onClick={logout} className="flex items-center text-red-600 focus:text-red-600">
                     <LogOut className="w-4 h-4 mr-2" />
                     <span>Log out</span>
                   </DropdownMenuItem>
@@ -296,19 +243,14 @@ export default function Header(): React.ReactElement {
                 </Button>
               </Link>
               <Link href="/register">
-                <Button className="hidden bg-indigo-600 md:inline-flex hover:bg-indigo-700">
-                  Sign up
-                </Button>
+                <Button className="hidden bg-indigo-600 md:inline-flex hover:bg-indigo-700">Sign up</Button>
               </Link>
             </>
           )}
+
           <Sheet>
             <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-gray-700 md:hidden dark:text-gray-300"
-              >
+              <Button variant="ghost" size="icon" className="text-gray-700 md:hidden dark:text-gray-300">
                 <Menu className="w-5 h-5" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
@@ -320,23 +262,22 @@ export default function Header(): React.ReactElement {
                     <div className="flex items-center gap-3 p-4 mb-6 rounded-lg bg-gray-50 dark:bg-gray-800">
                       <div className="relative">
                         <Avatar className="w-10 h-10">
-                          <AvatarImage src={user.avatar} alt={user.name} />
-                          <AvatarFallback>
-                            {user.name ? user.name.charAt(0).toUpperCase() : "?"}
-                          </AvatarFallback>
+                          <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+                          <AvatarFallback>{user.name?.charAt(0) || "U"}</AvatarFallback>
                         </Avatar>
                         <div className="absolute -bottom-1 -right-1">
-                          <LevelBadge level={user.level || 1} size="sm" />
+                          <Badge className="h-4 w-4 flex items-center justify-center text-[10px] bg-yellow-500 p-0">
+                            {user.level || 1}
+                          </Badge>
                         </div>
                       </div>
                       <div>
                         <div className="font-medium">{user.name}</div>
-                        <div className="text-sm text-indigo-600 dark:text-indigo-400">
-                          {user.karma + " Karma"}
-                        </div>
+                        <div className="text-sm text-indigo-600 dark:text-indigo-400">{user.karma || 0} Karma</div>
                       </div>
                     </div>
                   )}
+
                   <nav className="flex flex-col gap-4">
                     {navItems.map((item) => (
                       <Link
@@ -349,6 +290,7 @@ export default function Header(): React.ReactElement {
                     ))}
                   </nav>
                 </div>
+
                 {user ? (
                   <div className="pt-4 mt-4 border-t">
                     <div className="flex flex-col gap-2">
@@ -366,10 +308,7 @@ export default function Header(): React.ReactElement {
                         <Settings className="w-4 h-4 mr-2" />
                         <span>Settings</span>
                       </Link>
-                      <button
-                        onClick={logout}
-                        className="flex items-center mt-2 text-sm font-medium text-red-600"
-                      >
+                      <button onClick={logout} className="flex items-center mt-2 text-sm font-medium text-red-600">
                         <LogOut className="w-4 h-4 mr-2" />
                         <span>Log out</span>
                       </button>
@@ -383,9 +322,7 @@ export default function Header(): React.ReactElement {
                       </Button>
                     </Link>
                     <Link href="/register">
-                      <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
-                        Sign up
-                      </Button>
+                      <Button className="w-full bg-indigo-600 hover:bg-indigo-700">Sign up</Button>
                     </Link>
                   </div>
                 )}
@@ -395,5 +332,5 @@ export default function Header(): React.ReactElement {
         </div>
       </div>
     </header>
-  );
+  )
 }

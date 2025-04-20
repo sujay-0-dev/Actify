@@ -1,23 +1,7 @@
-import React from "react";
-import { Star, Award, Trophy, Crown, Sparkles } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Star, Award, Trophy, Crown, Sparkles } from "lucide-react"
+import { cn } from "@/lib/utils"
 
-interface LevelConfig {
-  name: string;
-  icon: React.ComponentType<{ className?: string }>;
-  color: string;
-  bgColor: string;
-  borderColor: string;
-}
-
-interface LevelBadgeProps {
-  level?: number;
-  size?: "sm" | "md" | "lg" | "xl";
-  showLabel?: boolean;
-  className?: string;
-}
-
-const LEVEL_CONFIG: Record<number, LevelConfig> = {
+const LEVEL_CONFIG = {
   1: {
     name: "Beginner",
     icon: Star,
@@ -53,25 +37,25 @@ const LEVEL_CONFIG: Record<number, LevelConfig> = {
     bgColor: "bg-pink-100 dark:bg-pink-900/30",
     borderColor: "border-pink-200 dark:border-pink-800",
   },
-};
+}
 
-export default function LevelBadge({ level = 1, size = "md", showLabel = false, className }: LevelBadgeProps): React.ReactElement {
-  const config = LEVEL_CONFIG[level] || LEVEL_CONFIG[1];
-  const Icon = config.icon;
+export default function LevelBadge({ level = 1, size = "md", showLabel = false, className }) {
+  const config = LEVEL_CONFIG[level] || LEVEL_CONFIG[1]
+  const Icon = config.icon
 
-  const sizeClasses: Record<string, string> = {
+  const sizeClasses = {
     sm: "h-6 w-6 text-xs",
     md: "h-10 w-10 text-sm",
     lg: "h-16 w-16 text-base",
     xl: "h-20 w-20 text-lg",
-  };
+  }
 
-  const iconSizes: Record<string, string> = {
+  const iconSizes = {
     sm: "h-3 w-3",
     md: "h-5 w-5",
     lg: "h-8 w-8",
     xl: "h-10 w-10",
-  };
+  }
 
   return (
     <div className={cn("flex flex-col items-center", className)}>
@@ -98,5 +82,5 @@ export default function LevelBadge({ level = 1, size = "md", showLabel = false, 
         </span>
       )}
     </div>
-  );
+  )
 }
