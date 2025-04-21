@@ -66,9 +66,11 @@ export default function Header() {
 
   const navItems = [
     { name: "Home", href: "/" },
+    { name: "Community", href: "/community" },
     { name: "Public Issues", href: "/public-issues" },
     { name: "Skill Sharing", href: "/skill-sharing" },
     { name: "Marketplace", href: "/marketplace" },
+    { name: "welfare-schemes", href: "/welfare-schemes" },
     { name: "Eco Challenges", href: "/eco-challenges" },
   ]
 
